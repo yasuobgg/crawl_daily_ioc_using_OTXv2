@@ -2,6 +2,7 @@ import crawl_module
 import mongo_module
 
 from flask import Flask, jsonify, request
+
 from flask_cors import CORS
 
 # Scheduler
@@ -27,6 +28,14 @@ def get_data():
     )
 
 
+@app.route("/deleteall", methods=["DELETE"])
+def delete_all():
+    mongo_module.delete_all_data()
+    return (jsonify(""), 202)
+
+
+# daily_crawl()
+
 # schedule everyday at 7 AM
 scheduler = BackgroundScheduler()
 trigger = CronTrigger(year="*", month="*", day="*", hour="7", minute="0", second="0")
@@ -38,4 +47,4 @@ scheduler.add_job(
 scheduler.start()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(port=5678, debug=True)

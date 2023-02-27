@@ -1,5 +1,7 @@
 from pymongo import MongoClient
 
+from datetime import datetime
+
 # environment variables
 import os
 from dotenv import load_dotenv
@@ -15,6 +17,8 @@ col_name = os.getenv("MONGO_COL_NAME")
 client = MongoClient(server, port)
 db = client.get_database(db_name)
 
+a = datetime.now()
+
 
 # save indicators to mongo
 def save_indicators(ioc):
@@ -22,9 +26,9 @@ def save_indicators(ioc):
     col = db.get_collection(f"{col_name}")
     col.insert_one(
         {
-            "indicator": ioc["indicator"],
+            "timestamp": int(round(a.timestamp())),
             "type": ioc["type"],
-            "created": ioc["created"],
+            "data": ioc["data"],
         }
     )
 
@@ -33,3 +37,8 @@ def save_indicators(ioc):
 def find_indicators(*args):
     col = db.get_collection(f"{col_name}")
     return [x for x in col.find(*args, {"_id": False})]
+
+
+def delete_all_data():
+    col = db.get_collection(f"{col_name}")
+    col.delete_many({})

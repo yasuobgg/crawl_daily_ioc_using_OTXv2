@@ -15,17 +15,36 @@ results = otx.search_pulses("malware")
 
 def find_all_indicators_and_save_to_mongo():
     pulses = []
-    # Print out the ID of the first pulse in the results
+    iocs = []
+    # Get all pulses_id of results
     for i in range(len(results["results"])):
         pulse_id = results["results"][i]["id"]
         pulses.append(pulse_id)
 
     # Get all the indicators associated with a pulse
     for pulse in pulses:
-        try:
-            indicators = otx.get_pulse_indicators(pulse)
-            for indicator in indicators:
-                mongo.save_indicators(indicator)
-                # print (f'{indicator["indicator"]} ({indicator["type"]}) ({indicator["created"]})')
-        except indicators["indicator"].DoesNotExist:
-            pass
+        indicators = otx.get_pulse_indicators(pulse)
+        for indicator in indicators:
+            iocs.append(indicator)
+
+    # Group all iocs by type, iocs in list data[], like this:
+    #     {
+    #     "timestamp": 012345678,
+    #     "type": "asdf",
+    #     "data": [],
+    #      }
+    grouped_dict = {}
+    for item in iocs:
+        type = item["type"]
+        if type in grouped_dict:
+            grouped_dict[type].append(item["indicator"])
+        else:
+            grouped_dict[type] = [item["indicator"]]
+
+    grouped_list = []
+    for type, items in grouped_dict.items():
+        grouped_list.append({"type": type.replace("FileHash-", ""), "data": items})
+
+    # For loop to save all items to mongodb
+    for item in grouped_list:
+        mongo.save_indicators(item)
