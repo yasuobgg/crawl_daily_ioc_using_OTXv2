@@ -33,12 +33,15 @@ def find_all_indicators_and_save_to_mongo():
             for indicator in indicators:
                 iocs.append(indicator)
 
-    # Group all iocs by type, iocs in list data[], like this:
-    #     {
-    #     "timestamp": 012345678,
-    #     "type": "asdf",
-    #     "data": [],
-    #      }
+    # Group all iocs by type, iocs in a group_list, like this:
+    # [
+    #   {
+    #     "timestamp": 012345678,"type": "asdf","data": [],
+    #   },
+    #   {......},
+    #   {......},
+    # ]
+
     grouped_dict = {}
     for item in iocs:
         type = item["type"]

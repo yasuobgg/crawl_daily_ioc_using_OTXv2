@@ -35,7 +35,7 @@ def get_data(request):
     else:
         res = {"Type error": "Unavailable"}
 
-    return sjson(res, headers={"Modified-By": "CMC"})
+    return sjson(res, headers={'X-Served-By': 'CMC SOC'})
 
 
 # schedule everyday at 7 AM
