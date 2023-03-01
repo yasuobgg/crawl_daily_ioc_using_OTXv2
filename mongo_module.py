@@ -21,17 +21,17 @@ a = datetime.now()
 
 
 # save indicators to mongo
-def save_indicators(ioc):
-    # for ioc in iocs:
+def put_iocs_to_collection(iocs):
+
     col = db.get_collection(f"{col_name}")
+
     col.insert_one(
         {
             "timestamp": int(round(a.timestamp())),
-            "type": ioc["type"],
-            "data": ioc["data"],
+            "type": iocs["type"],
+            "data": iocs["data"],
         }
     )
-
 
 # find indicators in mongo
 def find_indicators(*args):

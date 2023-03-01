@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# local lib
 import crawl_module
 import mongo_module
 
+# web app lib
 from sanic import Sanic
 from sanic.response import json as sjson
 from sanic_cors import CORS
 
+# basic lib
 import json
 
 # Scheduler
@@ -26,9 +29,9 @@ def daily_crawl():
 
 @app.route("/api/v1", methods=["POST"])
 def get_data(request):
-    param = json.loads(request.body)
+    param = json.loads(request.body)  # get the body of the request sent by postman
     print(param)
-    ftype = param["type"]
+    ftype = param["type"]  
 
     if ftype == "MD5" or ftype == "IPv4" or ftype == "domain":
         res = mongo_module.find_indicators(param)
