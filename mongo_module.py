@@ -37,8 +37,3 @@ def save_indicators(ioc):
 def find_indicators(*args):
     col = db.get_collection(f"{col_name}")
     return [x for x in col.find(*args, {"_id": False})]
-
-
-def delete_all_data():
-    col = db.get_collection(f"{col_name}")
-    col.delete_many({})

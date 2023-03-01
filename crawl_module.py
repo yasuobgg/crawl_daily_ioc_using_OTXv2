@@ -14,18 +14,24 @@ results = otx.search_pulses("malware")
 
 
 def find_all_indicators_and_save_to_mongo():
-    pulses = []
+    # All types of searching for IOCs
+    types = [
+        "IOCs",
+        "malware",
+        "IP addresses",
+        "Domains",
+        "URLs",
+        "File hashes",
+        "Email addresses",
+    ]
     iocs = []
-    # Get all pulses_id of results
-    for i in range(len(results["results"])):
-        pulse_id = results["results"][i]["id"]
-        pulses.append(pulse_id)
-
-    # Get all the indicators associated with a pulse
-    for pulse in pulses:
-        indicators = otx.get_pulse_indicators(pulse)
-        for indicator in indicators:
-            iocs.append(indicator)
+    # Get all iocs of pulses found
+    for mane in types:
+        results = otx.search_pulses(mane)
+        for result in results["results"]:
+            indicators = otx.get_pulse_indicators(result["id"])
+            for indicator in indicators:
+                iocs.append(indicator)
 
     # Group all iocs by type, iocs in list data[], like this:
     #     {

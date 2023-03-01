@@ -1,15 +1,21 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import crawl_module
 import mongo_module
 
-from flask import Flask, jsonify, request
+from sanic import Sanic
+from sanic.response import json as sjson
+from sanic_cors import CORS
 
-from flask_cors import CORS
+import json
 
 # Scheduler
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-app = Flask(__name__)
+app = Sanic(__name__)
+app.config["DEBUG"] = True
 CORS(app)
 
 
@@ -18,23 +24,19 @@ def daily_crawl():
     crawl_module.find_all_indicators_and_save_to_mongo()
 
 
-@app.route("/app", methods=["GET"])
-def get_data():
-    param = request.get_json()
+@app.route("/api/v1", methods=["POST"])
+def get_data(request):
+    param = json.loads(request.body)
     print(param)
-    res = mongo_module.find_indicators(param)
-    return jsonify(
-        res,
-    )
+    ftype = param["type"]
 
+    if ftype == "MD5" or ftype == "IPv4" or ftype == "domain":
+        res = mongo_module.find_indicators(param)
+    else:
+        res = {"Type error": "Unavailable"}
 
-@app.route("/deleteall", methods=["DELETE"])
-def delete_all():
-    mongo_module.delete_all_data()
-    return (jsonify(""), 202)
+    return sjson(res, headers={"Modified-By": "CMC"})
 
-
-# daily_crawl()
 
 # schedule everyday at 7 AM
 scheduler = BackgroundScheduler()
@@ -47,4 +49,5 @@ scheduler.add_job(
 scheduler.start()
 
 if __name__ == "__main__":
-    app.run(port=5678, debug=True)
+    # daily_crawl()
+    app.run(host="0.0.0.0", port=8000, debug=False, auto_reload=True)
