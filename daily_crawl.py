@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # local lib
-import crawl_module
-import mongo_module
+import crawl_module as crawl
+import mongo_module as mongo
 
 # web app lib
 from sanic import Sanic
@@ -24,7 +24,8 @@ CORS(app)
 
 # find daily indicator and save to mongodb
 def daily_crawl():
-    crawl_module.find_all_indicators_and_save_to_mongo()
+    # iocs = crawl_module.find_all_indicators_and_save_to_mongo()
+    mongo.put_iocs_to_collection(crawl.find_all_indicators_and_save_to_mongo())
 
 
 @app.route("/api/v1", methods=["POST"])
@@ -33,12 +34,12 @@ def get_data(request):
     print(param)
     ftype = param["type"]  
 
-    if ftype == "MD5" or ftype == "IPv4" or ftype == "domain":
-        res = mongo_module.find_indicators(param)
+    if ftype == "MD5" or ftype == "IPv4" or ftype == "domain": # type of data to query
+        res = mongo.find_iocs(param)  # find in mongodb
     else:
         res = {"Type error": "Unavailable"}
 
-    return sjson(res, headers={'X-Served-By': 'CMC SOC'})
+    return sjson(res, headers={'X-Served-By': 'CMC SOC'}) # return response + headers
 
 
 # schedule everyday at 7 AM

@@ -11,7 +11,8 @@ load_dotenv()
 server = os.getenv("MONGO_SERVER")
 port = int(os.getenv("MONGO_PORT"))
 db_name = os.getenv("MONGO_DB_NAME")
-col_name = os.getenv("MONGO_COL_NAME")
+col_name_1= os.getenv("MONGO_COL_NAME_1")
+col_name_2 = os.getenv("MONGO_COL_NAME_2")
 
 # MongoDB
 client = MongoClient(server, port)
@@ -20,20 +21,34 @@ db = client.get_database(db_name)
 a = datetime.now()
 
 
-# save indicators to mongo
+# save indicators to mongo, ioc2
 def put_iocs_to_collection(iocs):
+    col = db.get_collection(f"{col_name_2}")
+    for ioc in iocs:
+        col.insert_one(
+            {
+                "timestamp": int(round(a.timestamp())),
+                "type": ioc["type"],
+                "data": ioc["data"],
+            }
+        )
 
-    col = db.get_collection(f"{col_name}")
-
-    col.insert_one(
-        {
-            "timestamp": int(round(a.timestamp())),
-            "type": iocs["type"],
-            "data": iocs["data"],
-        }
-    )
-
-# find indicators in mongo
-def find_indicators(*args):
-    col = db.get_collection(f"{col_name}")
+# find indicators in mongo, ioc2
+def find_iocs(*args):
+    col = db.get_collection(f"{col_name_2}")
     return [x for x in col.find(*args, {"_id": False})]
+
+
+# save pulse_id to mongo, ioc1
+def find_and_put_pulses_to_collection(pulse):
+    col = db.get_collection(f"{col_name_1}")
+    f = col.find_one({"pulse_id": pulse})
+    if f is None: # neu khong tim thay f
+        col.insert_one(
+            {
+                "pulse_id": pulse,
+            }
+        )
+        return pulse
+    else:
+        return None
