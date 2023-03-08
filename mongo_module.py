@@ -8,14 +8,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-server = os.getenv("MONGO_SERVER")
-port = int(os.getenv("MONGO_PORT"))
+con_str = os.getenv("MONGO_CONNECTION_STRING")
 db_name = os.getenv("MONGO_DB_NAME")
 col_name_1= os.getenv("MONGO_COL_NAME_1")
 col_name_2 = os.getenv("MONGO_COL_NAME_2")
 
 # MongoDB
-client = MongoClient(server, port)
+client = MongoClient(con_str)
 db = client.get_database(db_name)
 
 a = datetime.now()

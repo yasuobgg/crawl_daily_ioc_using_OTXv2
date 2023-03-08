@@ -1,0 +1,9 @@
+version: '3'
+services:
+  app:
+    build: .
+    command: python -u daily_crawl.py
+    ports:
+      - "8008:8008"
+    volumes:
+      - .:/app

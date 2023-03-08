@@ -2,4 +2,7 @@ OTXv2 ==1.5.12
 sanic ==22.12.0
 pymongo ==4.3.3
 APScheduler==3.10.0
+python-dotenv
+datetime
+sanic_cors
 

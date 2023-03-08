@@ -24,7 +24,7 @@ def find_all_indicators_and_save_to_mongo():
     iocs = []
     # Get all iocs of pulses found
     for type in types:  # browse each type in types[]
-        results = otx.search_pulses(type, max_results=50)  # search for it pulses
+        results = otx.search_pulses(type, max_results=30)  # search for it pulses
         for result in results["results"]:  # browse each result in results field of the above pulses
             # r = mongo.find_pulse_if_exis(result['id']) 
             r = mongo.find_and_put_pulses_to_collection(result['id'])  # if pulse_id not exis in db, put to db and return pulse_id

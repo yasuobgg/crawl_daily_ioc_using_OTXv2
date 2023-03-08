@@ -29,7 +29,7 @@ def daily_crawl():
 
 
 @app.route("/api/v1", methods=["POST"])
-def get_data(request):
+async def get_data(request):
     param = json.loads(request.body)  # get the body of the request sent by postman
     print(param)
     ftype = param["type"]  
@@ -54,4 +54,4 @@ scheduler.start()
 
 if __name__ == "__main__":
     # daily_crawl()
-    app.run(host="0.0.0.0", port=8000, debug=False, auto_reload=True)
+    app.run(host="0.0.0.0", port=8008)
